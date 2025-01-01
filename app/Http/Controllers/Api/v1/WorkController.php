@@ -16,7 +16,7 @@ class WorkController extends BaseController
     public function index(): JsonResponse
     {
         try {
-            $works = Work::with(['user', 'workItems'])->get();
+            $works = Work::with(['workItems'])->get();
             return $this->sendResponse($works, 'Works fetched successfully');
         } catch (\Exception $e) {
             logError('WorkController', 'index', $e->getMessage());
@@ -31,7 +31,7 @@ class WorkController extends BaseController
     {
         try {
             $work = Work::create($request->validated());
-            return $this->sendResponse($work->load(['user', 'workItems']), 'Work created successfully');
+            return $this->sendResponse($work->load(['workItems']), 'Work created successfully');
         } catch (\Exception $e) {
             logError('WorkController', 'store', $e->getMessage());
             return $this->sendError('Failed to create work', [], 500);
@@ -44,7 +44,7 @@ class WorkController extends BaseController
     public function details($id): JsonResponse
     {
         try {
-            $work = Work::with(['user', 'workItems'])->findOrFail($id);
+            $work = Work::with(['workItems'])->findOrFail($id);
             return $this->sendResponse($work, 'Work fetched successfully');
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Work not found', [], 404);
@@ -62,7 +62,7 @@ class WorkController extends BaseController
         try {
             $work = Work::findOrFail($id);
             $work->update($request->validated());
-            return $this->sendResponse($work->load(['user', 'workItems']), 'Work updated successfully');
+            return $this->sendResponse($work->load(['workItems']), 'Work updated successfully');
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Work not found', [], 404);
         } catch (\Exception $e) {

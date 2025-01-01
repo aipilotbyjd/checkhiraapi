@@ -17,7 +17,7 @@ class PaymentController extends BaseController
     public function index(): JsonResponse
     {
         try {
-            $payments = Payment::with(['user', 'work'])->get();
+            $payments = Payment::with(['work'])->get();
             return $this->sendResponse($payments, 'Payments retrieved successfully');
         } catch (\Exception $e) {
             logError('PaymentController', 'index', $e->getMessage());
@@ -46,7 +46,7 @@ class PaymentController extends BaseController
     public function details($id): JsonResponse
     {
         try {
-            $payment = Payment::with(['user', 'work'])->findOrFail($id);
+            $payment = Payment::with(['work'])->findOrFail($id);
             return $this->sendResponse($payment, 'Payment details retrieved successfully');
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Payment not found');

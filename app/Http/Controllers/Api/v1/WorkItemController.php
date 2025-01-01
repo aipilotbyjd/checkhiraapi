@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Models\WorkItem;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\WorkItemRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -27,17 +28,10 @@ class WorkItemController extends BaseController
     /**
      * Store a new work item.
      */
-    public function store(Request $request): JsonResponse
+    public function store(WorkItemRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'type' => 'required|string',
-                'diamond' => 'nullable|integer',
-                'price' => 'nullable|numeric',
-                'work_id' => 'required|exists:works,id',
-                'is_active' => 'nullable|in:0,1'
-            ]);
-
+            $validated = $request->validated();
             $workItem = WorkItem::create($validated);
             return $this->sendResponse($workItem, 'Work item created successfully.');
         } catch (\Exception $e) {
@@ -65,18 +59,12 @@ class WorkItemController extends BaseController
     /**
      * Update the specified work item.
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(WorkItemRequest $request, $id): JsonResponse
     {
         try {
             $workItem = WorkItem::findOrFail($id);
 
-            $validated = $request->validate([
-                'type' => 'sometimes|string',
-                'diamond' => 'nullable|integer',
-                'price' => 'nullable|numeric',
-                'work_id' => 'sometimes|exists:works,id',
-                'is_active' => 'nullable|in:0,1'
-            ]);
+            $validated = $request->validated();
 
             $workItem->update($validated);
             return $this->sendResponse($workItem, 'Work item updated successfully.');
