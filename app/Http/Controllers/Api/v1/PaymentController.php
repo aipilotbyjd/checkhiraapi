@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Requests\PaymentRequest;
 use App\Models\Payment;
 use App\Http\Controllers\BaseController;
 use Illuminate\Http\JsonResponse;
@@ -27,21 +28,10 @@ class PaymentController extends BaseController
     /**
      * Store a newly created payment.
      */
-    public function store(Request $request): JsonResponse
+    public function store(PaymentRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'amount' => 'required|numeric',
-                'category' => 'required|string',
-                'description' => 'nullable|string',
-                'source' => 'required|string',
-                'date' => 'required|date',
-                'work_id' => 'required|exists:works,id',
-                'user_id' => 'required|exists:users,id',
-                'is_active' => 'nullable|in:0,1'
-            ]);
-
+            $validated = $request->validated();
             $payment = Payment::create($validated);
             return $this->sendResponse($payment, 'Payment created successfully');
         } catch (\Exception $e) {
@@ -69,23 +59,11 @@ class PaymentController extends BaseController
     /**
      * Update the specified payment.
      */
-    public function update(Request $request, $id): JsonResponse
+    public function update(PaymentRequest $request, $id): JsonResponse
     {
         try {
             $payment = Payment::findOrFail($id);
-
-            $validated = $request->validate([
-                'name' => 'sometimes|string|max:255',
-                'amount' => 'sometimes|numeric',
-                'category' => 'sometimes|string',
-                'description' => 'nullable|string',
-                'source' => 'sometimes|string',
-                'date' => 'sometimes|date',
-                'work_id' => 'sometimes|exists:works,id',
-                'user_id' => 'sometimes|exists:users,id',
-                'is_active' => 'nullable|in:0,1'
-            ]);
-
+            $validated = $request->validated();
             $payment->update($validated);
             return $this->sendResponse($payment, 'Payment updated successfully');
         } catch (ModelNotFoundException $e) {
