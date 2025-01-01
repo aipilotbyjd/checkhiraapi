@@ -41,7 +41,7 @@ class WorkController extends BaseController
     /**
      * Display the specified work.
      */
-    public function show($id): JsonResponse
+    public function details($id): JsonResponse
     {
         try {
             $work = Work::with(['user', 'workItems'])->findOrFail($id);
@@ -49,7 +49,7 @@ class WorkController extends BaseController
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Work not found', [], 404);
         } catch (\Exception $e) {
-            logError('WorkController', 'show', $e->getMessage());
+            logError('WorkController', 'details', $e->getMessage());
             return $this->sendError('Failed to fetch work', [], 500);
         }
     }
