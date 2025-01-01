@@ -10,17 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('works', function (Blueprint $table) {
+        Schema::create('payment_sources', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->string('description')->nullable();
-            $table->string('date')->nullable();
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('name');
             $table->enum('is_active', ['0', '1'])->default('1');
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -29,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('works');
+        Schema::dropIfExists('payment_sources');
     }
 };

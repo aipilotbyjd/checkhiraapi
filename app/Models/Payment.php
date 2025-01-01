@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    protected $fillable = ['name', 'amount', 'category', 'description', 'source', 'date', 'is_active'];
+    protected $fillable = ['name', 'amount', 'category', 'description', 'source_id', 'date', 'is_active'];
 
     public function user()
     {
@@ -16,5 +16,10 @@ class Payment extends Model
     public function work()
     {
         return $this->belongsTo(Work::class);
+    }
+
+    public function source()
+    {
+        return $this->belongsTo(PaymentSource::class);
     }
 }

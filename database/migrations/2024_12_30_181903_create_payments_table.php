@@ -16,14 +16,15 @@ return new class extends Migration {
             $table->decimal('amount', 10, 2)->nullable();
             $table->string('category')->nullable();
             $table->text('description')->nullable();
-            $table->string('source')->nullable();
+            $table->unsignedBigInteger('source_id')->nullable();
             $table->date('date')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->enum('is_active', ['0', '1'])->default('1');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('source_id')->references('id')->on('payment_sources');
         });
     }
 
