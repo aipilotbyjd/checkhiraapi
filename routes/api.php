@@ -9,14 +9,14 @@ use App\Http\Controllers\Api\v1\PaymentController;
 //v1 api routes
 Route::prefix('v1')->group(function () {
     //auth routes
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::post('register', [AuthController::class, 'register'])->name('register');
 
     //api middleware
     Route::group(['middleware' => 'auth:api'], function () {
         //user routes
-        Route::get('user', [AuthController::class, 'user']);
-        Route::post('logout', [AuthController::class, 'logout']);
+        Route::get('user', [AuthController::class, 'user'])->name('user');
+        Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
         //work routes
         Route::prefix('works')->group(function () {
