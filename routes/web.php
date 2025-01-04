@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,3 +32,29 @@ Route::get('/', function () {
 
     return view('hirabook', ['quote' => $randomQuote]);
 });
+
+
+// Route::get('/generate', function () {
+//     // Create personal access client
+//     $output = [];
+//     Artisan::call('passport:client', [
+//         '--personal' => true,
+//         '--no-interaction' => true
+//     ]);
+//     $clientOutput = Artisan::output();
+
+//     // Generate encryption keys if they don't exist
+//     Artisan::call('passport:keys', [
+//         '--force' => true
+//     ]);
+//     $keysOutput = Artisan::output();
+
+//     \Log::info('Passport installation output: ' . $clientOutput);
+
+//     return [
+//         'message' => 'Passport keys and client generated successfully',
+//         'keys_output' => trim($keysOutput),
+//         'client_output' => trim($clientOutput)
+//     ];
+
+// });
