@@ -31,6 +31,7 @@ class WorkController extends BaseController
     {
         try {
             $work = Work::create($request->validated());
+            $work->workItems()->createMany($request->entries);
             return $this->sendResponse($work->load(['workItems']), 'Work created successfully');
         } catch (\Exception $e) {
             logError('WorkController', 'store', $e->getMessage());
@@ -62,6 +63,8 @@ class WorkController extends BaseController
         try {
             $work = Work::findOrFail($id);
             $work->update($request->validated());
+            $work->workItems()->delete();
+            $work->workItems()->createMany($request->entries);
             return $this->sendResponse($work->load(['workItems']), 'Work updated successfully');
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Work not found', [], 404);
@@ -78,8 +81,11 @@ class WorkController extends BaseController
     {
         try {
             $work = Work::findOrFail($id);
-            $work->delete();
-            return $this->sendResponse([], 'Work deleted successfully');
+            if ($work->delete()) {
+                $work->workItems()->delete();
+                return $this->sendResponse([], 'Work deleted successfully');
+            }
+            return $this->sendError('Failed to delete work', [], 500);
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Work not found', [], 404);
         } catch (\Exception $e) {
