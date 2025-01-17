@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PaymentSource extends Model
 {
-    protected $fillable = ['name', 'is_active'];
+    protected $fillable = ['name', 'icon', 'is_active'];
 
     public function payments()
     {

@@ -17,7 +17,7 @@ class PaymentController extends BaseController
     public function index(): JsonResponse
     {
         try {
-            $payments = Payment::with(['work'])->get();
+            $payments = Payment::with(['work', 'source'])->get();
             return $this->sendResponse($payments, 'Payments retrieved successfully');
         } catch (\Exception $e) {
             logError('PaymentController', 'index', $e->getMessage());
