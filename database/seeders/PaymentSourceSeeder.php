@@ -15,8 +15,10 @@ class PaymentSourceSeeder extends Seeder
     {
         $paymentSources = [
             ['name' => 'Cash'],
-            ['name' => 'Bank Account'],
+            ['name' => 'Bank Transfer'],
             ['name' => 'UPI'],
+            ['name' => 'Cheque'],
+            ['name' => 'Card'],
             ['name' => 'Other'],
         ];
 
