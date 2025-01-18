@@ -22,14 +22,14 @@ class PaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'amount' => 'required|numeric',
-            'category' => 'required|string',
+            'name' => 'nullable|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'category' => 'nullable|string',
             'description' => 'nullable|string',
             'source_id' => 'required|exists:payment_sources,id',
             'date' => 'required|date',
-            'work_id' => 'required|exists:works,id',
-            'user_id' => 'required|exists:users,id',
+            'work_id' => 'nullable|exists:works,id',
+            'user_id' => 'nullable|exists:users,id',
             'is_active' => 'nullable|in:0,1'
         ];
     }

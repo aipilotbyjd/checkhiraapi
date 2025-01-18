@@ -43,6 +43,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/{id}', [PaymentController::class, 'details'])->name('payments.details');
             Route::put('/{id}', [PaymentController::class, 'update'])->name('payments.update');
             Route::delete('/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+            Route::get('/sources', [PaymentController::class, 'paymentSources'])->name('payments.sources');
         });
     });
 });

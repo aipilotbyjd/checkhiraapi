@@ -14,12 +14,12 @@ class PaymentSourceSeeder extends Seeder
     public function run(): void
     {
         $paymentSources = [
-            ['name' => 'Cash'],
-            ['name' => 'Bank Transfer'],
-            ['name' => 'UPI'],
-            ['name' => 'Cheque'],
-            ['name' => 'Card'],
-            ['name' => 'Other'],
+            ['name' => 'Cash', 'icon' => 'cash'],
+            ['name' => 'Bank Transfer', 'icon' => 'bank-transfer-in'],
+            ['name' => 'UPI', 'icon' => 'qrcode'],
+            ['name' => 'Cheque', 'icon' => 'file-document-outline'],
+            ['name' => 'Card', 'icon' => 'credit-card'],
+            ['name' => 'Other', 'icon' => 'dots-horizontal'],
         ];
 
         foreach ($paymentSources as $paymentSource) {

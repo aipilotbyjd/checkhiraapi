@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Requests\PaymentRequest;
 use App\Models\Payment;
 use App\Http\Controllers\BaseController;
+use App\Models\PaymentSource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -13,12 +14,36 @@ class PaymentController extends BaseController
 {
     /**
      * Display a listing of payments.
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            $payments = Payment::with(['work', 'source'])->get();
-            return $this->sendResponse($payments, 'Payments retrieved successfully');
+            $perPage = $request->input('per_page', 10);
+            $query = Payment::query()->with(['work', 'source']);
+
+            // Apply filters if provided
+            if ($request->has('source_id')) {
+                $query->where('source_id', $request->input('source_id'));
+            }
+            if ($request->has('work_id')) {
+                $query->where('work_id', $request->input('work_id'));
+            }
+            if ($request->has('status')) {
+                $query->where('status', $request->input('status'));
+            }
+
+            // Get paginated results and total of amount in one query
+            $payments = $query->paginate($perPage);
+
+            $total = array_sum(array_column($payments->items(), 'amount'));
+
+            return $this->sendResponse([
+                'payments' => $payments,
+                'total' => $total
+            ], 'Payments retrieved successfully');
         } catch (\Exception $e) {
             logError('PaymentController', 'index', $e->getMessage());
             return $this->sendError('Error retrieving payments', [], 500);
@@ -88,6 +113,17 @@ class PaymentController extends BaseController
         } catch (\Exception $e) {
             logError('PaymentController', 'destroy', $e->getMessage());
             return $this->sendError('Error deleting payment', [], 500);
+        }
+    }
+
+    public function paymentSources(): JsonResponse
+    {
+        try {
+            $paymentSources = PaymentSource::select('id', 'name', 'icon')->get();
+            return $this->sendResponse($paymentSources, 'Payment sources retrieved successfully');
+        } catch (\Exception $e) {
+            logError('PaymentController', 'paymentSources', $e->getMessage());
+            return $this->sendError('Error retrieving payment sources', [], 500);
         }
     }
 }
