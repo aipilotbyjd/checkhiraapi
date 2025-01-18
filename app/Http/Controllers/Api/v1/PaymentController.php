@@ -57,6 +57,7 @@ class PaymentController extends BaseController
     {
         try {
             $validated = $request->validated();
+            $validated['date'] = isset($validated['date']) ? date('Y-m-d', strtotime($validated['date'])) : null;
             $payment = Payment::create($validated);
             return $this->sendResponse($payment, 'Payment created successfully');
         } catch (\Exception $e) {
@@ -89,6 +90,7 @@ class PaymentController extends BaseController
         try {
             $payment = Payment::findOrFail($id);
             $validated = $request->validated();
+            $validated['date'] = isset($validated['date']) ? date('Y-m-d', strtotime($validated['date'])) : null;
             $payment->update($validated);
             return $this->sendResponse($payment, 'Payment updated successfully');
         } catch (ModelNotFoundException $e) {
