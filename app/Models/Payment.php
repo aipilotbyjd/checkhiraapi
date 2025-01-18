@@ -25,6 +25,6 @@ class Payment extends Model
 
     public static function getTotalPayments()
     {
-        return self::where('is_active', 1)->sum('amount');
+        return self::sum('amount');
     }
 }
