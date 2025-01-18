@@ -38,12 +38,12 @@ Route::prefix('v1')->group(function () {
 
         //payment routes
         Route::prefix('payments')->group(function () {
+            Route::get('/sources', [PaymentController::class, 'paymentSources'])->name('payments.sources');
             Route::get('/', [PaymentController::class, 'index'])->name('payments.index');
             Route::post('/', [PaymentController::class, 'store'])->name('payments.store');
             Route::get('/{id}', [PaymentController::class, 'details'])->name('payments.details');
             Route::put('/{id}', [PaymentController::class, 'update'])->name('payments.update');
             Route::delete('/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
-            Route::get('/sources', [PaymentController::class, 'paymentSources'])->name('payments.sources');
         });
     });
 });
