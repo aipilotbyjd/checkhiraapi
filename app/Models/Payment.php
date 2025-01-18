@@ -22,4 +22,9 @@ class Payment extends Model
     {
         return $this->belongsTo(PaymentSource::class);
     }
+
+    public static function getTotalPayments()
+    {
+        return self::where('is_active', true)->sum('amount');
+    }
 }

@@ -38,7 +38,7 @@ class PaymentController extends BaseController
             // Get paginated results and total of amount in one query
             $payments = $query->latest()->paginate($perPage);
 
-            $total = Payment::where('is_active', true)->sum('amount');
+            $total = Payment::getTotalPayments();
 
             return $this->sendResponse([
                 'payments' => $payments,
