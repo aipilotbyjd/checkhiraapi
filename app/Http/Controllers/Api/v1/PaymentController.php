@@ -36,7 +36,7 @@ class PaymentController extends BaseController
             }
 
             // Get paginated results and total of amount in one query
-            $payments = $query->paginate($perPage);
+            $payments = $query->latest()->paginate($perPage);
 
             $total = array_sum(array_column($payments->items(), 'amount'));
 
