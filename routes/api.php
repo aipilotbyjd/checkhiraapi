@@ -11,6 +11,8 @@ Route::prefix('v1')->group(function () {
     //auth routes
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('register', [AuthController::class, 'register'])->name('register');
+    Route::post('phone-login', [AuthController::class, 'phoneLogin'])->name('phone-login');
+    Route::post('verify-otp', [AuthController::class, 'verifyOtp'])->name('verify-otp');
 
     //api middleware
     Route::group(['middleware' => 'auth:api'], function () {
