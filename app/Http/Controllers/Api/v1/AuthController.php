@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends BaseController
 {
@@ -169,6 +171,82 @@ class AuthController extends BaseController
             return $this->sendResponse($user, 'OTP verified successfully');
         } catch (\Exception $e) {
             logError('AuthController', 'verifyOtp', $e->getMessage());
+            return $this->sendError('Something went wrong', [], 500);
+        }
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|exists:users,email',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Validation Error.', $validator->errors());
+            }
+
+            $user = User::where('email', $request->email)->first();
+
+            // Generate reset token
+            $resetToken = Str::random(60);
+            $user->password_reset_token = $resetToken;
+            $user->password_reset_expires_at = now()->addHours(24); // Token valid for 24 hours
+            $user->save();
+
+            // Send reset password email
+            Mail::send('emails.forgot-password', [
+                'user' => $user,
+                'resetToken' => $resetToken,
+                'resetUrl' => env('FRONTEND_URL') . '/reset-password?token=' . $resetToken
+            ], function($message) use ($user) {
+                $message->to($user->email)
+                    ->subject('Reset Your Password');
+            });
+
+            return $this->sendResponse([
+                'message' => 'Password reset link has been sent to your email'
+            ], 'Reset email sent successfully');
+
+        } catch (\Exception $e) {
+            logError('AuthController', 'forgotPassword', $e->getMessage());
+            return $this->sendError('Something went wrong', [], 500);
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'token' => 'required|string',
+                'password' => 'required|min:6',
+                'password_confirmation' => 'required|same:password'
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Validation Error.', $validator->errors());
+            }
+
+            $user = User::where('password_reset_token', $request->token)
+                       ->where('password_reset_expires_at', '>', now())
+                       ->first();
+
+            if (!$user) {
+                return $this->sendError('Invalid or expired reset token', [], 400);
+            }
+
+            // Update password
+            $user->password = Hash::make($request->password);
+            $user->password_reset_token = null;
+            $user->password_reset_expires_at = null;
+            $user->save();
+
+            return $this->sendResponse([
+                'message' => 'Password has been reset successfully'
+            ], 'Password reset successful');
+
+        } catch (\Exception $e) {
+            logError('AuthController', 'resetPassword', $e->getMessage());
             return $this->sendError('Something went wrong', [], 500);
         }
     }
