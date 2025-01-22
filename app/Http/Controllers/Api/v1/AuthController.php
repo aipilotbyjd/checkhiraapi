@@ -199,7 +199,7 @@ class AuthController extends BaseController
                 'user' => $user,
                 'resetToken' => $resetToken,
                 'resetUrl' => env('FRONTEND_URL') . '/reset-password?token=' . $resetToken
-            ], function($message) use ($user) {
+            ], function ($message) use ($user) {
                 $message->to($user->email)
                     ->subject('Reset Your Password');
             });
@@ -228,8 +228,8 @@ class AuthController extends BaseController
             }
 
             $user = User::where('password_reset_token', $request->token)
-                       ->where('password_reset_expires_at', '>', now())
-                       ->first();
+                ->where('password_reset_expires_at', '>', now())
+                ->first();
 
             if (!$user) {
                 return $this->sendError('Invalid or expired reset token', [], 400);
@@ -247,6 +247,34 @@ class AuthController extends BaseController
 
         } catch (\Exception $e) {
             logError('AuthController', 'resetPassword', $e->getMessage());
+            return $this->sendError('Something went wrong', [], 500);
+        }
+    }
+
+    public function updateProfile(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'email' => 'required|email|unique:users,email,' . Auth::user()->id,
+                'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:users,phone,' . Auth::user()->id,
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Validation Error.', $validator->errors());
+            }
+
+            $user = User::find(Auth::user()->id);
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+            $user->save();
+
+            return $this->sendResponse($user, 'Profile updated successfully');
+        } catch (\Exception $e) {
+            logError('AuthController', 'updateProfile', $e->getMessage());
             return $this->sendError('Something went wrong', [], 500);
         }
     }

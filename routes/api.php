@@ -21,6 +21,7 @@ Route::prefix('v1')->group(function () {
         //user routes
         Route::get('user', [AuthController::class, 'user'])->name('user');
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+        Route::put('profile', [AuthController::class, 'updateProfile'])->name('profile.update');
 
         //work routes
         Route::prefix('works')->group(function () {
