@@ -54,7 +54,7 @@ class PaymentController extends BaseController
             // Get paginated results and total of amount in one query
             $payments = $query->latest()->paginate($perPage);
 
-            $total = Payment::getTotalPayments();
+            $total = Payment::getTotalPayments($filter);
 
             return $this->sendResponse([
                 'payments' => $payments,
