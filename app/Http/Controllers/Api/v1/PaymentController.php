@@ -23,6 +23,7 @@ class PaymentController extends BaseController
         try {
             $perPage = $request->input('per_page', 10);
             $query = Payment::query()->with(['work', 'source']);
+            $filter = $request->input('filter', 'all');
 
             // Apply filters if provided
             if ($request->has('source_id')) {
@@ -33,6 +34,21 @@ class PaymentController extends BaseController
             }
             if ($request->has('status')) {
                 $query->where('status', $request->input('status'));
+            }
+
+
+            switch ($filter) {
+                case 'today':
+                    $query->where('date', date('Y-m-d'));
+                    break;
+                case 'week':
+                    $query->whereBetween('date', [date('Y-m-d', strtotime('last Monday')), date('Y-m-d', strtotime('next Sunday'))]);
+                    break;
+                case 'month':
+                    $query->whereMonth('date', date('m'));
+                    break;
+                default:
+                    break;
             }
 
             // Get paginated results and total of amount in one query
