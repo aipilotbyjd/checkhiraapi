@@ -259,6 +259,7 @@ class AuthController extends BaseController
                 'last_name' => 'required',
                 'email' => 'required|email|unique:users,email,' . Auth::user()->id,
                 'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:users,phone,' . Auth::user()->id,
+                'address' => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -270,6 +271,7 @@ class AuthController extends BaseController
             $user->last_name = $request->last_name;
             $user->email = $request->email;
             $user->phone = $request->phone;
+            $user->address = $request->address;
             $user->save();
 
             return $this->sendResponse($user, 'Profile updated successfully');
