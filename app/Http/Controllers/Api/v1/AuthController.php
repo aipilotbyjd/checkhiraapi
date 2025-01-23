@@ -260,6 +260,7 @@ class AuthController extends BaseController
                 'email' => 'required|email|unique:users,email,' . Auth::user()->id,
                 'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:users,phone,' . Auth::user()->id,
                 'address' => 'nullable|string',
+                'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -272,6 +273,12 @@ class AuthController extends BaseController
             $user->email = $request->email;
             $user->phone = $request->phone;
             $user->address = $request->address;
+            if ($request->hasFile('profile_image')) {
+                $image = $request->file('profile_image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('images/profile'), $imageName);
+                $user->profile_image = $imageName;
+            }
             $user->save();
 
             return $this->sendResponse($user, 'Profile updated successfully');

@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('phone_verification_token_sent_ip', 45)->nullable();
             $table->text('phone_verification_token_sent_user_agent')->nullable();
             $table->longText('address')->nullable();
+            $table->string('profile_image')->nullable();
         });
     }
 
@@ -40,6 +41,8 @@ return new class extends Migration {
             $table->dropColumn('phone_verification_token_sent_ip');
             $table->dropColumn('phone_verification_token_sent_user_agent');
             $table->dropColumn('address');
+            $table->dropColumn('profile_image');
         });
     }
 };
+
