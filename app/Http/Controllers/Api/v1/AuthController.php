@@ -278,4 +278,15 @@ class AuthController extends BaseController
             return $this->sendError('Something went wrong', [], 500);
         }
     }
+
+    public function profile(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            return $this->sendResponse($user, 'Profile fetched successfully');
+        } catch (\Exception $e) {
+            logError('AuthController', 'profile', $e->getMessage());
+            return $this->sendError('Something went wrong', [], 500);
+        }
+    }
 }
