@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->integer('phone_verification_token_sent_count')->default(0);
             $table->string('phone_verification_token_sent_ip', 45)->nullable();
             $table->text('phone_verification_token_sent_user_agent')->nullable();
+            $table->longText('address')->nullable();
         });
     }
 
@@ -38,6 +39,7 @@ return new class extends Migration {
             $table->dropColumn('phone_verification_token_sent_count');
             $table->dropColumn('phone_verification_token_sent_ip');
             $table->dropColumn('phone_verification_token_sent_user_agent');
+            $table->dropColumn('address');
         });
     }
 };
