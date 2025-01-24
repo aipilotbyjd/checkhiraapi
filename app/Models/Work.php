@@ -40,7 +40,9 @@ class Work extends Model
         }
 
         return $query->with('workItems')->get()->sum(function ($work) {
-            return $work->workItems->sum('price');
+            return $work->workItems->sum(function ($item) {
+                return $item->price * $item->quantity;
+            });
         });
     }
 }
