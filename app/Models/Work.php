@@ -39,10 +39,9 @@ class Work extends Model
                 break;
         }
 
-        return $query->with('workItems')->get()->sum(function ($work) {
-            return $work->workItems->sum(function ($item) {
-                return $item->price * $item->quantity;
-            });
-        });
+        // Use a subquery to calculate the total directly in the database
+        return $query->join('work_items', 'works.id', '=', 'work_items.work_id')
+            ->selectRaw('SUM(work_items.price * work_items.quantity) as total')
+            ->value('total') ?? 0;
     }
 }
