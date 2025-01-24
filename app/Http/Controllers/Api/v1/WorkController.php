@@ -6,6 +6,7 @@ use App\Models\Work;
 use App\Http\Requests\WorkRequest;
 use App\Http\Controllers\BaseController;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class WorkController extends BaseController
@@ -13,10 +14,37 @@ class WorkController extends BaseController
     /**
      * Display a listing of the works.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            $works = Work::with(['workItems'])->get();
+            $perPage = $request->input('per_page', 10);
+            $query = Work::query()->with(['workItems']);
+            $filter = $request->input('filter', 'all');
+
+            // Apply filters if provided
+            if ($request->has('user_id')) {
+                $query->where('user_id', $request->input('user_id'));
+            }
+
+            if ($request->has('is_active')) {
+                $query->where('is_active', $request->input('is_active'));
+            }
+
+            switch ($filter) {
+                case 'today':
+                    $query->where('date', date('Y-m-d'));
+                    break;
+                case 'week':
+                    $query->whereBetween('date', [date('Y-m-d', strtotime('last Monday')), date('Y-m-d', strtotime('next Sunday'))]);
+                    break;
+                case 'month':
+                    $query->whereMonth('date', date('m'));
+                    break;
+                default:
+                    break;
+            }
+
+            $works = $query->latest()->paginate($perPage);
             return $this->sendResponse($works, 'Works fetched successfully');
         } catch (\Exception $e) {
             logError('WorkController', 'index', $e->getMessage());
