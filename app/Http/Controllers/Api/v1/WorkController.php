@@ -45,7 +45,13 @@ class WorkController extends BaseController
             }
 
             $works = $query->latest()->paginate($perPage);
-            return $this->sendResponse($works, 'Works fetched successfully');
+
+            $total = Work::getTotalWorks($filter);
+
+            return $this->sendResponse([
+                'works' => $works,
+                'total' => $total
+            ], 'Works fetched successfully');
         } catch (\Exception $e) {
             logError('WorkController', 'index', $e->getMessage());
             return $this->sendError('Failed to fetch works', [], 500);
