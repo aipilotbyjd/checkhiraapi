@@ -25,7 +25,7 @@ class Work extends Model
     }
     public static function getTotalWorks($filter)
     {
-        $query = self::where('is_active', '1');
+        $query = self::where('works.is_active', '1');
 
         switch ($filter) {
             case 'today':
