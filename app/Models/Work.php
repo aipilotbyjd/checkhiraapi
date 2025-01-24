@@ -23,7 +23,6 @@ class Work extends Model
     {
         return $this->hasMany(Payment::class);
     }
-
     public static function getTotalWorks($filter)
     {
         $query = self::where('is_active', '1');
@@ -40,6 +39,8 @@ class Work extends Model
                 break;
         }
 
-        return $query->count();
+        return $query->with('workItems')->get()->sum(function ($work) {
+            return $work->workItems->sum('price');
+        });
     }
 }
