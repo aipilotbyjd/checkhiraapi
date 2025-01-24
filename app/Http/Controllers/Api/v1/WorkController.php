@@ -115,8 +115,9 @@ class WorkController extends BaseController
     {
         try {
             $work = Work::findOrFail($id);
+            // Delete child records first to avoid foreign key constraint violation
+            $work->workItems()->delete();
             if ($work->delete()) {
-                $work->workItems()->delete();
                 return $this->sendResponse([], 'Work deleted successfully');
             }
             return $this->sendError('Failed to delete work', [], 500);
