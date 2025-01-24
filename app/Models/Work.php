@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Work extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['name', 'description', 'date', 'user_id', 'is_active'];
+    protected $fillable = ['name', 'description', 'date', 'user_id', 'is_active', 'total'];
 
     public function user()
     {
@@ -40,8 +40,6 @@ class Work extends Model
         }
 
         // Use a subquery to calculate the total directly in the database
-        return $query->join('work_items', 'works.id', '=', 'work_items.work_id')
-            ->selectRaw('SUM(work_items.price * work_items.diamond) as total')
-            ->value('total') ?? 0;
+        return $query->get()->sum('total');
     }
 }

@@ -66,6 +66,10 @@ class WorkController extends BaseController
         try {
             $work = Work::create($request->validated());
             $work->workItems()->createMany($request->entries);
+            $work->total = $work->workItems->sum(function ($item) {
+                return $item->price * $item->diamond;
+            });
+            $work->save();
             return $this->sendResponse($work->load(['workItems']), 'Work created successfully');
         } catch (\Exception $e) {
             logError('WorkController', 'store', $e->getMessage());
@@ -99,6 +103,10 @@ class WorkController extends BaseController
             $work->update($request->validated());
             $work->workItems()->delete();
             $work->workItems()->createMany($request->entries);
+            $work->total = $work->workItems->sum(function ($item) {
+                return $item->price * $item->diamond;
+            });
+            $work->save();
             return $this->sendResponse($work->load(['workItems']), 'Work updated successfully');
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Work not found', [], 404);
