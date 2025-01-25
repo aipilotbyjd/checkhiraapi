@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\AuthController;
+use App\Http\Controllers\Api\v1\HomeController;
 use App\Http\Controllers\Api\v1\WorkController;
 use App\Http\Controllers\Api\v1\WorkItemController;
 use App\Http\Controllers\Api\v1\PaymentController;
@@ -51,5 +52,8 @@ Route::prefix('v1')->group(function () {
             Route::put('/{id}', [PaymentController::class, 'update'])->name('payments.update');
             Route::delete('/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
         });
+
+        //get all settings
+        Route::get('settings', [HomeController::class, 'settings'])->name('settings');
     });
 });
