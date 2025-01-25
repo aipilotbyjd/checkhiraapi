@@ -55,5 +55,8 @@ Route::prefix('v1')->group(function () {
 
         //get all settings
         Route::get('settings', [HomeController::class, 'settings'])->name('settings');
+
+        //get all notifications
+        Route::get('notifications', [HomeController::class, 'notifications'])->name('notifications');
     });
 });
