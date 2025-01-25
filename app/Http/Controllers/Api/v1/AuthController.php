@@ -255,10 +255,10 @@ class AuthController extends BaseController
     {
         try {
             $validator = Validator::make($request->all(), [
-                'first_name' => 'required',
-                'last_name' => 'required',
-                'email' => 'required|email|unique:users,email,' . Auth::user()->id,
-                'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:users,phone,' . Auth::user()->id,
+                'first_name' => 'nullable',
+                'last_name' => 'nullable',
+                'email' => 'nullable|email|unique:users,email,' . Auth::user()->id,
+                'phone' => 'nullable|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:users,phone,' . Auth::user()->id,
                 'address' => 'nullable|string',
                 'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
