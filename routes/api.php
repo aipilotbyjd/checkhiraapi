@@ -22,7 +22,7 @@ Route::prefix('v1')->group(function () {
         Route::get('user', [AuthController::class, 'user'])->name('user');
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
         Route::get('profile', [AuthController::class, 'profile'])->name('profile');
-        Route::put('profile', [AuthController::class, 'updateProfile'])->name('profile.update');
+        Route::post('profile', [AuthController::class, 'updateProfile'])->name('profile.update');
 
         //work routes
         Route::prefix('works')->group(function () {
