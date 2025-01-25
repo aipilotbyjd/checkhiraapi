@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string('name')->nullable();
             $table->string('description')->nullable();
             $table->string('date')->nullable();
+            $table->string('total')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->enum('is_active', ['0', '1'])->default('1');
             $table->timestamps();
