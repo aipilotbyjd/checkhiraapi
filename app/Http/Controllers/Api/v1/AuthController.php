@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends BaseController
 {
@@ -255,30 +256,44 @@ class AuthController extends BaseController
     {
         try {
             $validator = Validator::make($request->all(), [
-                'first_name' => 'nullable',
-                'last_name' => 'nullable',
-                'email' => 'nullable|email|unique:users,email,' . Auth::user()->id,
-                'phone' => 'nullable|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:users,phone,' . Auth::user()->id,
-                'address' => 'nullable|string',
-                'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'first_name' => 'sometimes|required|string|max:255',
+                'last_name' => 'sometimes|required|string|max:255',
+                'email' => 'sometimes|required|email|unique:users,email,' . Auth::id(),
+                'phone' => 'sometimes|required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:users,phone,' . Auth::id(),
+                'address' => 'sometimes|required|string|max:500',
+                'profile_image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
             if ($validator->fails()) {
                 return $this->sendError('Validation Error.', $validator->errors());
             }
 
-            $user = User::find(Auth::user()->id);
-            $user->first_name = $request->first_name;
-            $user->last_name = $request->last_name;
-            $user->email = $request->email;
-            $user->phone = $request->phone;
-            $user->address = $request->address;
+            $user = User::findOrFail(Auth::id());
+
+            // Update only provided fields
+            if ($request->has('first_name'))
+                $user->first_name = $request->first_name;
+            if ($request->has('last_name'))
+                $user->last_name = $request->last_name;
+            if ($request->has('email'))
+                $user->email = $request->email;
+            if ($request->has('phone'))
+                $user->phone = $request->phone;
+            if ($request->has('address'))
+                $user->address = $request->address;
+
             if ($request->hasFile('profile_image')) {
-                $image = $request->file('profile_image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/profile'), $imageName);
+                // Delete old image if exists
+                if ($user->profile_image) {
+                    Storage::disk('public')->delete('profile_images/' . $user->profile_image);
+                }
+
+                // Store new image
+                $imageName = time() . '_' . Str::random(10) . '.' . $request->profile_image->extension();
+                $request->profile_image->storeAs('profile_images', $imageName, 'public');
                 $user->profile_image = $imageName;
             }
+
             $user->save();
 
             return $this->sendResponse($user, 'Profile updated successfully');
