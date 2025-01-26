@@ -37,7 +37,7 @@ class HomeController extends BaseController
     {
         try {
             $perPage = request()->query('per_page', 10);
-            $notifications = Notification::select('id', 'title', 'description', 'image', 'link', 'link_text', 'link_icon', 'link_color', 'created_at')
+            $notifications = Notification::select('id', 'title', 'description', 'image', 'is_read', 'link', 'link_text', 'link_icon', 'link_color', 'created_at')
                 ->latest()
                 ->paginate($perPage);
 
