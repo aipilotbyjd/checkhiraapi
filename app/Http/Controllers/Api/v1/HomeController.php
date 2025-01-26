@@ -47,5 +47,18 @@ class HomeController extends BaseController
             return $this->sendError('Error fetching notifications', [], 500);
         }
     }
+
+    public function readNotification($id, $isRead = true)
+    {
+        try {
+            $notification = Notification::findOrFail($id);
+            $notification->is_read = $isRead == 'true' ? true : false;
+            $notification->save();
+            return $this->sendResponse($notification, 'Notification read successfully');
+        } catch (\Exception $e) {
+            logError('HomeController', 'readNotification', $e->getMessage());
+            return $this->sendError('Error reading notification', [], 500);
+        }
+    }
 }
 
