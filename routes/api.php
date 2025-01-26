@@ -60,5 +60,9 @@ Route::prefix('v1')->group(function () {
         Route::get('notifications', [HomeController::class, 'notifications'])->name('notifications');
         //read notification
         Route::get('notifications/{id}/read/{isRead}', [HomeController::class, 'readNotification'])->name('notifications.read');
+        //unread notifications count
+        Route::get('notifications/unread/count', [HomeController::class, 'unreadNotificationsCount'])->name('notifications.unread-count');
+        //read all notifications
+        Route::get('notifications/read/all', [HomeController::class, 'readAllNotifications'])->name('notifications.read-all');
     });
 });

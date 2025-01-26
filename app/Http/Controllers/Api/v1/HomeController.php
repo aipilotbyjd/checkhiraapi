@@ -60,5 +60,27 @@ class HomeController extends BaseController
             return $this->sendError('Error reading notification', [], 500);
         }
     }
+
+    public function readAllNotifications()
+    {
+        try {
+            Notification::where('is_read', false)->update(['is_read' => true]);
+            return $this->sendResponse([], 'All notifications read successfully');
+        } catch (\Exception $e) {
+            logError('HomeController', 'readAllNotifications', $e->getMessage());
+            return $this->sendError('Error reading all notifications', [], 500);
+        }
+    }
+
+    public function unreadNotificationsCount()
+    {
+        try {
+            $count = Notification::unread()->count();
+            return $this->sendResponse($count, 'Unread notifications count fetched successfully');
+        } catch (\Exception $e) {
+            logError('HomeController', 'unreadNotificationsCount', $e->getMessage());
+            return $this->sendError('Error fetching unread notifications count', [], 500);
+        }
+    }
 }
 

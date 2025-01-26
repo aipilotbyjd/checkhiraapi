@@ -17,4 +17,14 @@ class Notification extends Model
     {
         return $query->where('status', 1);
     }
+
+    public function scopeUnread($query)
+    {
+        return $query->where('is_read', false);
+    }
+
+    public static function getUnreadCount()
+    {
+        return self::unread()->active()->count();
+    }
 }
