@@ -113,7 +113,7 @@ class HomeController extends BaseController
                     return [
                         'id' => $payment->id,
                         'type' => 'payment',
-                        'title' => $payment->name,
+                        'title' => $payment->from,
                         'from' => $payment->from,
                         'description' => $payment->description,
                         'amount' => $payment->amount,
