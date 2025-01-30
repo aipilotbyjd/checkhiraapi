@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->decimal('amount', 10, 2)->nullable();
             $table->string('category')->nullable();
             $table->text('description')->nullable();
+            $table->string('from')->nullable();
             $table->unsignedBigInteger('source_id')->nullable();
             $table->date('date')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
