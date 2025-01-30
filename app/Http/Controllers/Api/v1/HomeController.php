@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\BaseController;
 use App\Models\PaymentSource;
 use App\Models\Notification;
+use App\Models\Payment;
+use App\Models\Work;
 
 class HomeController extends BaseController
 {
@@ -80,6 +82,53 @@ class HomeController extends BaseController
         } catch (\Exception $e) {
             logError('HomeController', 'unreadNotificationsCount', $e->getMessage());
             return $this->sendError('Error fetching unread notifications count', [], 500);
+        }
+    }
+
+    public function getRecentActivities()
+    {
+        try {
+            // Get recent works with their items
+            $works = Work::with('workItems')
+                ->latest()
+                ->take(10)
+                ->get()
+                ->map(function ($work) {
+                    return [
+                        'id' => $work->id,
+                        'type' => 'work',
+                        'title' => $work->title,
+                        'description' => $work->description,
+                        'amount' => $work->total_amount,
+                        'created_at' => $work->created_at,
+                    ];
+                });
+
+            // Get recent payments
+            $payments = Payment::latest()
+                ->take(10)
+                ->get()
+                ->map(function ($payment) {
+                    return [
+                        'id' => $payment->id,
+                        'type' => 'payment',
+                        'title' => 'Payment',
+                        'description' => $payment->description,
+                        'amount' => $payment->amount,
+                        'created_at' => $payment->created_at,
+                    ];
+                });
+
+            // Merge and sort activities by date
+            $activities = $works->concat($payments)
+                ->sortByDesc('created_at')
+                ->take(10)
+                ->values();
+
+            return $this->sendResponse($activities, 'Recent activities fetched successfully');
+        } catch (\Exception $e) {
+            logError('HomeController', 'getRecentActivities', $e->getMessage());
+            return $this->sendError('Error fetching recent activities', [], 500);
         }
     }
 }
