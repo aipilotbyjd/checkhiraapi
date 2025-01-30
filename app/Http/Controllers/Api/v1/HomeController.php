@@ -97,7 +97,7 @@ class HomeController extends BaseController
                     return [
                         'id' => $work->id,
                         'type' => 'work',
-                        'from' => $work->from,
+                        'from' => $work->name,
                         'title' => $work->name,
                         'description' => $work->description,
                         'amount' => $work->total,
@@ -114,7 +114,7 @@ class HomeController extends BaseController
                         'id' => $payment->id,
                         'type' => 'payment',
                         'title' => $payment->name,
-                        'from' => $payment->name,
+                        'from' => $payment->from,
                         'description' => $payment->description,
                         'amount' => $payment->amount,
                         'created_at' => $payment->created_at,
