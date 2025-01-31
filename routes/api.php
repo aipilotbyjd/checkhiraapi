@@ -67,5 +67,8 @@ Route::prefix('v1')->group(function () {
 
         //get recent activities
         Route::get('activities/recent', [HomeController::class, 'getRecentActivities'])->name('activities.recent');
+
+        //get recent status
+        Route::get('stats/recent', [HomeController::class, 'getRecentStatus'])->name('stats.recent');
     });
 });

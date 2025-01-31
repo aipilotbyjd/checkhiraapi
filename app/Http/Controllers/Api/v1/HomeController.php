@@ -133,5 +133,63 @@ class HomeController extends BaseController
             return $this->sendError('Error fetching recent activities', [], 500);
         }
     }
+
+    public function getRecentStatus()
+    {
+        try {
+            // Get works stats with single query
+            $worksStats = Work::selectRaw('
+                COUNT(*) as total_works,
+                COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) as today_works,
+                COUNT(CASE WHEN created_at BETWEEN ? AND ? THEN 1 END) as weekly_works,
+                COUNT(CASE WHEN MONTH(created_at) = MONTH(CURDATE()) THEN 1 END) as monthly_works
+            ', [now()->startOfWeek(), now()->endOfWeek()])
+                ->first();
+
+            // Get payments stats with single query  
+            $paymentsStats = Payment::selectRaw('
+                COUNT(*) as total_payments,
+                COUNT(CASE WHEN DATE(created_at) = CURDATE() THEN 1 END) as today_payments,
+                SUM(CASE WHEN DATE(created_at) = CURDATE() THEN amount ELSE 0 END) as today_amount,
+                COUNT(CASE WHEN created_at BETWEEN ? AND ? THEN 1 END) as weekly_payments,
+                SUM(CASE WHEN created_at BETWEEN ? AND ? THEN amount ELSE 0 END) as weekly_amount,
+                COUNT(CASE WHEN MONTH(created_at) = MONTH(CURDATE()) THEN 1 END) as monthly_payments,
+                SUM(CASE WHEN MONTH(created_at) = MONTH(CURDATE()) THEN amount ELSE 0 END) as monthly_amount,
+                SUM(amount) as total_amount
+            ', [
+                now()->startOfWeek(),
+                now()->endOfWeek(),
+                now()->startOfWeek(),
+                now()->endOfWeek()
+            ])
+                ->first();
+
+            $status = [
+                'today' => [
+                    'works' => $worksStats->today_works,
+                    'payments' => $paymentsStats->today_payments,
+                    'total_amount' => $paymentsStats->today_amount
+                ],
+                'weekly' => [
+                    'works' => $worksStats->weekly_works,
+                    'payments' => $paymentsStats->weekly_payments,
+                    'total_amount' => $paymentsStats->weekly_amount
+                ],
+                'monthly' => [
+                    'works' => $worksStats->monthly_works,
+                    'payments' => $paymentsStats->monthly_payments,
+                    'total_amount' => $paymentsStats->monthly_amount
+                ],
+                'total_works' => $worksStats->total_works,
+                'total_payments' => $paymentsStats->total_payments,
+                'total_amount' => $paymentsStats->total_amount
+            ];
+
+            return $this->sendResponse($status, 'Recent status fetched successfully');
+        } catch (\Exception $e) {
+            logError('HomeController', 'getRecentStatus', $e->getMessage());
+            return $this->sendError('Error fetching recent status', [], 500);
+        }
+    }
 }
 
