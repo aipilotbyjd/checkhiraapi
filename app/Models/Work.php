@@ -42,4 +42,23 @@ class Work extends Model
         // Use a subquery to calculate the total directly in the database
         return $query->get()->sum('total');
     }
+
+    public static function getTotalWorkAmount($filter)
+    {
+        $query = self::where('is_active', '1');
+
+        switch ($filter) {
+            case 'today':
+                $query->where('date', date('Y-m-d'));
+                break;
+            case 'week':
+                $query->whereBetween('date', [date('Y-m-d', strtotime('last Monday')), date('Y-m-d', strtotime('next Sunday'))]);
+                break;
+            case 'month':
+                $query->whereMonth('date', date('m'));
+                break;
+        }
+
+        return $query->sum('total');
+    }
 }

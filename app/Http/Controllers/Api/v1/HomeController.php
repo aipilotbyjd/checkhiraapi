@@ -146,6 +146,12 @@ class HomeController extends BaseController
             ', [now()->startOfWeek(), now()->endOfWeek()])
                 ->first();
 
+            // Get total work amount
+            $totalWorkAmount = Work::getTotalWorkAmount('all');
+            $todayWorkAmount = Work::getTotalWorkAmount('today');
+            $weeklyWorkAmount = Work::getTotalWorkAmount('week');
+            $monthlyWorkAmount = Work::getTotalWorkAmount('month');
+
             // Get payments stats with single query  
             $paymentsStats = Payment::selectRaw('
                 COUNT(*) as total_payments,
@@ -167,20 +173,24 @@ class HomeController extends BaseController
             $status = [
                 'today' => [
                     'works' => $worksStats->today_works,
+                    'work_amount' => $todayWorkAmount,
                     'payments' => $paymentsStats->today_payments,
                     'total_amount' => $paymentsStats->today_amount
                 ],
                 'weekly' => [
                     'works' => $worksStats->weekly_works,
+                    'work_amount' => $weeklyWorkAmount,
                     'payments' => $paymentsStats->weekly_payments,
                     'total_amount' => $paymentsStats->weekly_amount
                 ],
                 'monthly' => [
                     'works' => $worksStats->monthly_works,
+                    'work_amount' => $monthlyWorkAmount,
                     'payments' => $paymentsStats->monthly_payments,
                     'total_amount' => $paymentsStats->monthly_amount
                 ],
                 'total_works' => $worksStats->total_works,
+                'total_work_amount' => $totalWorkAmount,
                 'total_payments' => $paymentsStats->total_payments,
                 'total_amount' => $paymentsStats->total_amount
             ];
