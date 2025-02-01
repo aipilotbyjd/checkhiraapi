@@ -115,21 +115,18 @@ class AuthController extends BaseController
             $user->save();
 
             $message = "Your OTP is: " . $otp;
-            $response = Http::withHeaders([
-                'apikey' => env('SUPABASE_ANON_KEY'),
-                'content-type' => 'application/json',
-            ])->post(env('SUPABASE_URL') . '/auth/v1/otp', [
-                        'phone' => $request->phone,
+            $response = Http::withBasicAuth(
+                env('TWILIO_ACCOUNT_SID'),
+                env('TWILIO_AUTH_TOKEN')
+            )->asForm()->post('https://verify.twilio.com/v2/Services/VAefc7c40886b149a4d67e254490c85993/VerificationCheck', [
+                        'To' => '+91' . $request->phone,
+                        'Code' => $otp
                     ]);
 
-            if ($response->successful()) {
-                return $this->sendResponse([
-                    'message' => 'OTP sent successfully',
-                    'expires_in' => 5 // minutes
-                ], 'OTP sent successfully');
-            } else {
-                return $this->sendError('Failed to send OTP', [], 500);
-            }
+            return $this->sendResponse([
+                'message' => 'OTP sent successfully',
+                'expires_in' => 5 // minutes
+            ], 'OTP sent successfully');
         } catch (\Exception $e) {
             logError('AuthController', 'phoneLogin', $e->getMessage());
             return $this->sendError('Something went wrong', [], 500);
