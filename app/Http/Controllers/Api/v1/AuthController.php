@@ -126,9 +126,9 @@ class AuthController extends BaseController
             $response = Http::withBasicAuth(
                 $twilioSid,
                 $twilioToken
-            )->asForm()->post('https://verify.twilio.com/v2/Services/VAefc7c40886b149a4d67e254490c85993/VerificationCheck', [
+            )->asForm()->post('https://verify.twilio.com/v2/Services/VAefc7c40886b149a4d67e254490c85993/Verifications', [
                         'To' => '+91' . $request->phone,
-                        'Code' => $otp
+                        'Channel' => 'sms'
                     ]);
 
             return $this->sendResponse([
