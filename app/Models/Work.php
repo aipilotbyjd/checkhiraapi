@@ -49,14 +49,19 @@ class Work extends Model
 
         switch ($filter) {
             case 'today':
-                $query->where('date', date('Y-m-d'));
+                $query->whereDate('date', now());
                 break;
             case 'week':
-                $query->whereBetween('date', [date('Y-m-d', strtotime('last Monday')), date('Y-m-d', strtotime('next Sunday'))]);
+                $query->whereBetween('date', [now()->startOfWeek(), now()->endOfWeek()]);
                 break;
             case 'month':
-                $query->whereMonth('date', date('m'));
+                $query->whereMonth('date', now()->month)
+                    ->whereYear('date', now()->year);
                 break;
+            case 'all':
+                break;
+            default:
+                throw new \InvalidArgumentException('Invalid filter type provided');
         }
 
         return $query->sum('total');
