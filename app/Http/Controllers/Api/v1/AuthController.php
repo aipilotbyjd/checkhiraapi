@@ -116,11 +116,10 @@ class AuthController extends BaseController
 
             $message = "Your OTP is: " . $otp;
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . env('TWILIO_AUTH_TOKEN'),
-            ])->post('https://api.twilio.com/2010-04-01/Accounts/' . env('TWILIO_ACCOUNT_SID') . '/Messages.json', [
-                        'To' => $request->phone,
-                        'From' => env('TWILIO_PHONE_NUMBER'),
-                        'Body' => $message,
+                'apikey' => env('SUPABASE_ANON_KEY'),
+                'content-type' => 'application/json',
+            ])->post(env('SUPABASE_URL'), [
+                        'phone' => $request->phone,
                     ]);
 
             if ($response->successful()) {
