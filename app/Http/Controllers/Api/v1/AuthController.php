@@ -118,7 +118,7 @@ class AuthController extends BaseController
             $response = Http::withHeaders([
                 'apikey' => env('SUPABASE_ANON_KEY'),
                 'content-type' => 'application/json',
-            ])->post(env('SUPABASE_URL'), [
+            ])->post(env('SUPABASE_URL') . '/auth/v1/otp', [
                         'phone' => $request->phone,
                     ]);
 
