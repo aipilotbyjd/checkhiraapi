@@ -111,7 +111,7 @@ class AuthController extends BaseController
             // Generate and store OTP
             $otp = rand(1000, 9999);
             $user->otp = $otp;
-            $user->otp_expires_at = now()->addMinutes(5); // OTP valid for 5 minutes
+            $user->otp_expiry = now()->addMinutes(5); // OTP valid for 5 minutes
             $user->save();
 
             $message = "Your OTP is: " . $otp;
@@ -158,13 +158,13 @@ class AuthController extends BaseController
                 return $this->sendError('Invalid OTP', [], 400);
             }
 
-            if ($user->otp_expires_at < now()) {
+            if ($user->otp_expiry < now()) {
                 return $this->sendError('OTP has expired', [], 400);
             }
 
             // Clear OTP after successful verification
             $user->otp = null;
-            $user->otp_expires_at = null;
+            $user->otp_expiry = null;
             $user->save();
 
             $user->token = $user->createToken($user->email ?? 'hirabook')->accessToken;
