@@ -115,9 +115,17 @@ class AuthController extends BaseController
             $user->save();
 
             $message = "Your OTP is: " . $otp;
+
+            $twilioSid = env('TWILIO_ACCOUNT_SID');
+            $twilioToken = env('TWILIO_AUTH_TOKEN');
+
+            if (!$twilioSid || !$twilioToken) {
+                throw new \Exception('Twilio credentials not configured');
+            }
+
             $response = Http::withBasicAuth(
-                env('TWILIO_ACCOUNT_SID'),
-                env('TWILIO_AUTH_TOKEN')
+                $twilioSid,
+                $twilioToken
             )->asForm()->post('https://verify.twilio.com/v2/Services/VAefc7c40886b149a4d67e254490c85993/VerificationCheck', [
                         'To' => '+91' . $request->phone,
                         'Code' => $otp
