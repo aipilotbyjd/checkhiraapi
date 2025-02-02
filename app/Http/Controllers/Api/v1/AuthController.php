@@ -136,6 +136,11 @@ class AuthController extends BaseController
                             'languageCode' => 'en_US',
                             "bodyValues" => [
                                 $otp
+                            ],
+                            'buttonPayload' => [
+                                "1" => [
+                                    "Copy code"
+                                ]
                             ]
                         ]
                     ]);
