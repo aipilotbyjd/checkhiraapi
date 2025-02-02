@@ -128,7 +128,7 @@ class AuthController extends BaseController
                         'countryCode' => '+91',
                         'phoneNumber' => $request->phone,
                         // 'fullPhoneNumber' => '+91' . $request->phone,
-                        'campaignId' => env('INTERAKT_CAMPAIGN_ID'),
+                        // 'campaignId' => env('INTERAKT_CAMPAIGN_ID'),
                         'callbackData' => 'hiraapi',
                         'type' => 'Template',
                         'template' => [
