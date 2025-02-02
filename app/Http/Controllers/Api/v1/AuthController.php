@@ -112,7 +112,7 @@ class AuthController extends BaseController
             // Generate and store OTP
             $otp = rand(1000, 9999);
             $user->otp = $otp;
-            $user->otp_expiry = now()->addMinutes(5); // OTP valid for 5 minutes
+            $user->otp_expiry = now()->addMinutes(10); // OTP valid for 10 minutes
             $user->save();
 
             $apiKey = env('INTERAKT_API_KEY');
