@@ -114,21 +114,29 @@ class AuthController extends BaseController
             $user->otp_expiry = now()->addMinutes(5); // OTP valid for 5 minutes
             $user->save();
 
-            $message = "Your OTP is: " . $otp;
+            $apiKey = env('INTERAKT_API_KEY');
 
-            $twilioSid = env('TWILIO_ACCOUNT_SID');
-            $twilioToken = env('TWILIO_AUTH_TOKEN');
-
-            if (!$twilioSid || !$twilioToken) {
-                throw new \Exception('Twilio credentials not configured');
+            if (!$apiKey) {
+                throw new \Exception('Interakt API key not configured');
             }
 
-            $response = Http::withBasicAuth(
-                $twilioSid,
-                $twilioToken
-            )->asForm()->post('https://verify.twilio.com/v2/Services/VAefc7c40886b149a4d67e254490c85993/Verifications', [
-                        'To' => '+91' . $request->phone,
-                        'Channel' => 'sms'
+            $response = Http::withHeaders([
+                'Authorization' => 'Basic ' . $apiKey,
+                'Content-Type' => 'application/json'
+            ])->post('https://api.interakt.ai/v1/public/message/', [
+                        'countryCode' => '+91',
+                        'phoneNumber' => $request->phone,
+                        'fullPhoneNumber' => '+91' . $request->phone,
+                        'campaignId' => 'hiraapi',
+                        'callbackData' => 'hiraapi',
+                        'type' => 'Template',
+                        'template' => [
+                            'name' => 'hiraapi',
+                            'languageCode' => 'en',
+                            "bodyValues" => [
+                                $otp
+                            ]
+                        ]
                     ]);
 
             return $this->sendResponse([
