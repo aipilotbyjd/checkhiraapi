@@ -128,18 +128,19 @@ class AuthController extends BaseController
                         'countryCode' => '+91',
                         'phoneNumber' => $request->phone,
                         // 'fullPhoneNumber' => '+91' . $request->phone,
-                        // 'campaignId' => env('INTERAKT_CAMPAIGN_ID'),
                         'callbackData' => 'hiraapi',
                         'type' => 'Template',
                         'template' => [
                             'name' => 'hiraapi',
                             'languageCode' => 'en_US',
-                            "bodyValues" => [
+                            'bodyValues' => [
                                 $otp
                             ],
-                            'buttonPayload' => json_encode([
-                                "0" => ["Copy code"]
-                            ])
+                            'buttonValues' => [
+                                '1' => [
+                                    'Copy code'
+                                ]
+                            ]
                         ]
                     ]);
 
