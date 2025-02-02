@@ -127,7 +127,7 @@ class AuthController extends BaseController
             ])->post('https://api.interakt.ai/v1/public/message/', [
                         'countryCode' => '+91',
                         'phoneNumber' => $request->phone,
-                        'fullPhoneNumber' => '+91' . $request->phone,
+                        // 'fullPhoneNumber' => '+91' . $request->phone,
                         'campaignId' => 'hiraapi',
                         'callbackData' => 'hiraapi',
                         'type' => 'Template',
