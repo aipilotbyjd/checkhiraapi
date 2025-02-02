@@ -107,6 +107,13 @@ class AuthController extends BaseController
             $user = User::where('phone', $request->phone)->first();
             if (!$user) {
                 return $this->sendError('User not found. Please register first.', [], 404);
+            } else {
+                //register user
+                $user = User::create([
+                    'phone' => $request->phone,
+                    'otp' => rand(1000, 9999),
+                    'otp_expiry' => now()->addMinutes(10)
+                ]);
             }
 
             // Generate and store OTP
