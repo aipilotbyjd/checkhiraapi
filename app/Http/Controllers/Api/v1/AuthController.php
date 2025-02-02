@@ -133,7 +133,7 @@ class AuthController extends BaseController
                         'type' => 'Template',
                         'template' => [
                             'name' => 'hiraapi',
-                            'languageCode' => 'en',
+                            'languageCode' => 'en_US',
                             "bodyValues" => [
                                 $otp
                             ]
