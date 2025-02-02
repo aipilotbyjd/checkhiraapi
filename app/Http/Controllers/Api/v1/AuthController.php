@@ -108,6 +108,7 @@ class AuthController extends BaseController
             if (!$user) {
                 //register user
                 $user = User::create([
+                    'email' => $request->phone . '@hirabook.com',
                     'phone' => $request->phone,
                     'otp' => rand(1000, 9999),
                     'otp_expiry' => now()->addMinutes(10)
