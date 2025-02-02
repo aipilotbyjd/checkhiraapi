@@ -142,10 +142,23 @@ class AuthController extends BaseController
 
             Log::info($response->json());
 
-            return $this->sendResponse([
-                'message' => 'OTP sent successfully',
-                'expires_in' => 10 // minutes
-            ], 'OTP sent successfully');
+            $result = $response->json()['result'];
+
+            Log::info($result);
+
+            if ($result) {
+                return $this->sendResponse([
+                    'message' => 'OTP sent successfully',
+                    'expires_in' => 10 // minutes
+                ], 'OTP sent successfully');
+            } else {
+                return $this->sendError('OTP not sent', [], 400);
+            }
+
+            // return $this->sendResponse([
+            //     'message' => 'OTP sent successfully',
+            //     'expires_in' => 10 // minutes
+            // ], 'OTP sent successfully');
         } catch (\Exception $e) {
             logError('AuthController', 'phoneLogin', $e->getMessage());
             return $this->sendError('Something went wrong', [], 500);
