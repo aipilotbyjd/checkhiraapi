@@ -138,7 +138,7 @@ class AuthController extends BaseController
                                 $otp
                             ],
                             'buttonPayload' => [
-                                "1" => [
+                                "0" => [
                                     "Copy code"
                                 ]
                             ]
