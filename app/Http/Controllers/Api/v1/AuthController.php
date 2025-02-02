@@ -106,8 +106,6 @@ class AuthController extends BaseController
             // Check if user exists
             $user = User::where('phone', $request->phone)->first();
             if (!$user) {
-                return $this->sendError('User not found. Please register first.', [], 404);
-            } else {
                 //register user
                 $user = User::create([
                     'phone' => $request->phone,
