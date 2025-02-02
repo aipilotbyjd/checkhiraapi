@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -138,6 +139,8 @@ class AuthController extends BaseController
                             ]
                         ]
                     ]);
+
+            Log::info($response->json());
 
             return $this->sendResponse([
                 'message' => 'OTP sent successfully',
