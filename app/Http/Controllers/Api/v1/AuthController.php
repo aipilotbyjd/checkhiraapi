@@ -137,11 +137,9 @@ class AuthController extends BaseController
                             "bodyValues" => [
                                 $otp
                             ],
-                            'buttonPayload' => [
-                                [
-                                    "0" => ["Copy code"]
-                                ]
-                            ]
+                            'buttonPayload' => json_encode([
+                                "0" => ["Copy code"]
+                            ])
                         ]
                     ]);
 
