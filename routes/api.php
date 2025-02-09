@@ -16,7 +16,7 @@ Route::prefix('v1')->group(function () {
     Route::post('verify-otp', [AuthController::class, 'verifyOtp'])->name('verify-otp');
     Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
     Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password');
-
+    Route::post('google-login', [AuthController::class, 'googleLogin'])->name('google-login');
     //api middleware
     Route::group(['middleware' => 'auth:api'], function () {
         //user routes
