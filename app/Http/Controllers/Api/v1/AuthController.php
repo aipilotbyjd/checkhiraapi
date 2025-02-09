@@ -351,4 +351,67 @@ class AuthController extends BaseController
             return $this->sendError('Something went wrong', [], 500);
         }
     }
+
+    public function googleLogin(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'accessToken' => 'required|string'
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Validation Error.', $validator->errors(), 422);
+            }
+
+            $accessToken = $request->accessToken;
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken
+            ])->get('https://www.googleapis.com/oauth2/v3/userinfo');
+
+            if (!$response->successful()) {
+                return $this->sendError('Invalid Google token', [], 401);
+            }
+
+            $googleUser = $response->json();
+
+            if (!isset($googleUser['email'])) {
+                return $this->sendError('Email not available in Google user data', [], 400);
+            }
+
+            $user = User::where('email', $googleUser['email'])->first();
+
+            if (!$user) {
+                $user = User::create([
+                    'email' => $googleUser['email'],
+                    'first_name' => $googleUser['given_name'] ?? '',
+                    'last_name' => $googleUser['family_name'] ?? '',
+                    'profile_image' => $googleUser['picture'] ?? null,
+                    'google_id' => $googleUser['sub'] ?? null,
+                    'password' => Hash::make(Str::random(16))
+                ]);
+            } else {
+                $user->google_id = $googleUser['sub'] ?? $googleUser['id'];
+                if (empty($user->profile_image) && isset($googleUser['picture'])) {
+                    $user->profile_image = $googleUser['picture'];
+                }
+                $user->save();
+            }
+
+            $tokenResult = $user->createToken('GoogleToken');
+            $token = $tokenResult->accessToken;
+            $tokenResult->token->save();
+
+            $success['first_name'] = $user->first_name;
+            $success['last_name'] = $user->last_name;
+            $success['email'] = $user->email;
+            $success['profile_image'] = $user->profile_image;
+            $success['token'] = $token;
+            $success['expires_at'] = $tokenResult->token->expires_at;
+
+            return $this->sendResponse($success, 'Google login successful');
+        } catch (\Exception $e) {
+            logError('AuthController', 'googleLogin', $e->getMessage());
+            return $this->sendError('Something went wrong', [], 500);
+        }
+    }
 }
