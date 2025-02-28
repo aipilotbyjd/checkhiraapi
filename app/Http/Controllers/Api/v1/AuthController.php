@@ -19,12 +19,22 @@ class AuthController extends BaseController
     public function login(Request $request)
     {
         try {
-            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $validator = Validator::make($request->all(), [
+                'identifier' => 'required',
+                'password' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->sendError('Validation Error.', $validator->errors());
+            }
+
+            $identifier = $request->identifier;
+            $loginField = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+            if (Auth::attempt([$loginField => $identifier, 'password' => $request->password])) {
                 $user = Auth::user();
-
                 $user->token = $user->createToken($user->email ?? 'hirabook')->accessToken;
-
-                return $this->sendResponse($user, 'User has been logged successfully.');
+                return $this->sendResponse($user, 'User has been logged in successfully.');
             } else {
                 return $this->sendError('Unauthorized.', [], 401);
             }
@@ -38,11 +48,9 @@ class AuthController extends BaseController
     {
         try {
             $validator = Validator::make($request->all(), [
-                'first_name' => 'required',
-                'last_name' => 'required',
-                'email' => 'required|email|unique:users,email',
+                'email' => 'nullable|email|unique:users,email|required_without:phone',
+                'phone' => 'nullable|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:users,phone|required_without:email',
                 'password' => 'required',
-                'c_password' => 'required|same:password',
             ]);
 
             if ($validator->fails()) {
@@ -50,14 +58,21 @@ class AuthController extends BaseController
             }
 
             $input = $request->all();
+
+            if (empty($input['email']) && !empty($input['phone'])) {
+                $input['email'] = $input['phone'] . '@hirabook.com';
+            }
+
             $input['password'] = Hash::make($input['password']);
             $user = User::create($input);
-            $success['first_name'] = $user->first_name;
-            $success['last_name'] = $user->last_name;
-            $success['email'] = $user->email;
-            $success['token'] = $user->createToken($user->email ?? 'hirabook')->accessToken;
 
-            return $this->sendResponse($success, 'User register successfully.');
+            $success = [
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'token' => $user->createToken($user->email ?? 'hirabook')->accessToken,
+            ];
+
+            return $this->sendResponse($success, 'User registered successfully.');
         } catch (\Exception $e) {
             logError('AuthController', 'register', $e->getMessage());
             return $this->sendError('Something went wrong', [], 500);
