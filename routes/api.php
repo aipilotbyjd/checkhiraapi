@@ -17,6 +17,10 @@ Route::prefix('v1')->group(function () {
     Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password');
     Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset-password');
     Route::post('google-login', [AuthController::class, 'googleLogin'])->name('google-login');
+
+    //get all settings
+    Route::get('settings', [HomeController::class, 'settings'])->name('settings');
+    
     //api middleware
     Route::group(['middleware' => 'auth:api'], function () {
         //user routes
@@ -52,9 +56,6 @@ Route::prefix('v1')->group(function () {
             Route::put('/{id}', [PaymentController::class, 'update'])->name('payments.update');
             Route::delete('/{id}', [PaymentController::class, 'destroy'])->name('payments.destroy');
         });
-
-        //get all settings
-        Route::get('settings', [HomeController::class, 'settings'])->name('settings');
 
         //get all notifications
         Route::get('notifications', [HomeController::class, 'notifications'])->name('notifications');
