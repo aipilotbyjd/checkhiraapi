@@ -429,4 +429,15 @@ class AuthController extends BaseController
             return $this->sendError('Something went wrong', [], 500);
         }
     }
+
+    public function verifyToken(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            return $this->sendResponse($user, 'Token verified successfully');
+        } catch (\Exception $e) {
+            logError('AuthController', 'verifyToken', $e->getMessage());
+            return $this->sendError('Something went wrong', [], 500);
+        }
+    }
 }

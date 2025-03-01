@@ -20,9 +20,11 @@ Route::prefix('v1')->group(function () {
 
     //get all settings
     Route::get('settings', [HomeController::class, 'settings'])->name('settings');
-    
+
     //api middleware
     Route::group(['middleware' => 'auth:api'], function () {
+        Route::post('verify-token', [AuthController::class, 'verifyToken'])->name('verify-token');
+
         //user routes
         Route::get('user', [AuthController::class, 'user'])->name('user');
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
