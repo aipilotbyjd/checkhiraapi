@@ -32,9 +32,13 @@ class AuthController extends BaseController
             $loginField = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
 
             if (Auth::attempt([$loginField => $identifier, 'password' => $request->password])) {
-                $user = Auth::user();
-                $user->token = $user->createToken($user->email ?? 'hirabook')->accessToken;
-                return $this->sendResponse($user, 'User has been logged in successfully.');
+                $user = User::select('id', 'first_name', 'last_name', 'email', 'phone', 'profile_image')->where('id', Auth::id())->first();
+                $token = $user->createToken($user->email ?? 'hirabook')->accessToken;
+                $response = [
+                    'user' => $user,
+                    'token' => $token
+                ];
+                return $this->sendResponse($response, 'User has been logged in successfully.');
             } else {
                 return $this->sendError('Unauthorized.', [], 401);
             }
