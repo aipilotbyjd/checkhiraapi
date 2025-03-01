@@ -67,6 +67,9 @@ class AuthController extends BaseController
                 $input['email'] = $input['phone'] . '@hirabook.com';
             }
 
+            $input['first_name'] = fake()->firstName();
+            $input['last_name'] = fake()->lastName();
+
             $input['password'] = Hash::make($input['password']);
             $user = User::create($input);
 
