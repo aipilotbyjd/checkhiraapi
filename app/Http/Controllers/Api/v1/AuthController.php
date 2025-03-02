@@ -52,6 +52,8 @@ class AuthController extends BaseController
     {
         try {
             $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
                 'email' => 'nullable|email|unique:users,email|required_without:phone',
                 'phone' => 'nullable|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:users,phone|required_without:email',
                 'password' => 'required',
@@ -67,13 +69,15 @@ class AuthController extends BaseController
                 $input['email'] = $input['phone'] . '@hirabook.com';
             }
 
-            $input['first_name'] = fake()->firstName();
-            $input['last_name'] = fake()->lastName();
+            $input['first_name'] = $request->first_name ?? fake()->firstName();
+            $input['last_name'] = $request->last_name ?? fake()->lastName();
 
             $input['password'] = Hash::make($input['password']);
             $user = User::create($input);
 
             $success = [
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
                 'email' => $user->email,
                 'phone' => $user->phone,
                 'token' => $user->createToken($user->email ?? 'hirabook')->accessToken,
