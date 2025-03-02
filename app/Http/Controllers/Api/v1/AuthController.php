@@ -75,12 +75,20 @@ class AuthController extends BaseController
             $input['password'] = Hash::make($input['password']);
             $user = User::create($input);
 
-            $success = [
+            $token = $user->createToken($user->email ?? 'hirabook')->accessToken;
+
+            $user = [
+                'id' => $user->id,
                 'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
+                'last_name' => $user->last_namze,
                 'email' => $user->email,
                 'phone' => $user->phone,
-                'token' => $user->createToken($user->email ?? 'hirabook')->accessToken,
+                'profile_image' => $user->profile_image,
+            ];
+
+            $success = [
+                'user' => $user,
+                'token' => $token
             ];
 
             return $this->sendResponse($success, 'User registered successfully.');
