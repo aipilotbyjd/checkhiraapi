@@ -9,44 +9,26 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # Redirect Trailing Slashes If Not A Folder
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
+
+    # Deny direct access to .env and other sensitive files
+    <FilesMatch "^(\.env|\.git|composer\.(lock|json)|artisan|server\.php|package\.(json|lock)|webpack\.mix\.js|phpunit\.xml)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    # Block access to storage and bootstrap directories
+    RewriteRule ^(storage|bootstrap)/.* - [F,L]
+
+    # Block access to public/index.php/ (double index.php issue)
+    RewriteCond %{THE_REQUEST} \s/+public/index\.php/ [NC]
+    RewriteRule ^ public/index.php [L,R=301]
 
     # Send Requests To Front Controller (Laravel)
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-
-# ------------------------------
-# ✅ Proper CORS Handling
-# ------------------------------
-<IfModule mod_headers.c>
-    Header always set Access-Control-Allow-Origin "*"
-    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS, DELETE, PUT"
-    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
-    Header always set Access-Control-Allow-Credentials "true"
-</IfModule>
-
-# ------------------------------
-# ✅ Ensure OPTIONS requests are handled correctly
-# ------------------------------
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteRule ^(.*)$ $1 [R=204,NC,NE,L]
-</IfModule>
-
-# ------------------------------
-# 🔐 Security Enhancements
-# ------------------------------
-# Prevent access to .env and other sensitive files
-<FilesMatch "^\.">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# Prevent directory listing
-Options -Indexes
