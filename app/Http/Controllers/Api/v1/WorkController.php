@@ -64,6 +64,12 @@ class WorkController extends BaseController
     public function store(WorkRequest $request): JsonResponse
     {
         try {
+            //set cors headers
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
+            header('Access-Control-Allow-Headers: Content-Type');
+            header('Access-Control-Allow-Credentials: true');
+
             $work = Work::create($request->validated());
             $work->workItems()->createMany($request->entries);
             $work->total = $work->workItems->sum(function ($item) {
