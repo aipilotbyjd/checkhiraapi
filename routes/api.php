@@ -7,6 +7,12 @@ use App\Http\Controllers\Api\v1\WorkController;
 use App\Http\Controllers\Api\v1\WorkItemController;
 use App\Http\Controllers\Api\v1\PaymentController;
 
+//set cors headers
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
+header('Access-Control-Allow-Headers: *');
+header('Access-Control-Allow-Credentials: true');
+
 //v1 api routes
 Route::prefix('v1')->group(function () {
     //auth routes
